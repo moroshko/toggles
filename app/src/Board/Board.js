@@ -3,6 +3,10 @@ import Cell from '../Cell/Cell';
 import range from 'lodash.range';
 
 export default class Board extends Component {
+  onCellClick(rowIndex, columnIndex) {
+    console.log(rowIndex, columnIndex);
+  }
+
   renderRow = rowIndex => {
     const { width, cellWidth, cellHeight, gridColor } = this.props;
 
@@ -13,6 +17,7 @@ export default class Board extends Component {
         width={cellWidth}
         height={cellHeight}
         gridColor={gridColor}
+        onClick={this.onCellClick}
       />
     );
   };

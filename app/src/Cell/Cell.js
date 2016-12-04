@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 
 export default class Cell extends Component {
+  onClick = () => {
+    const { rowIndex, columnIndex, onClick } = this.props;
+
+    onClick(rowIndex, columnIndex);
+  };
+
   render() {
     const { rowIndex, columnIndex, width, height, gridColor } = this.props;
     const x = width * (columnIndex + 0.5);
@@ -23,6 +29,14 @@ export default class Cell extends Component {
           y2={y}
           stroke={gridColor}
           strokeWidth="1"
+        />
+        <rect
+          x={width * columnIndex}
+          y={height * rowIndex}
+          width={width}
+          height={height}
+          fill="transparent"
+          onClick={this.onClick}
         />
       </g>
     );
