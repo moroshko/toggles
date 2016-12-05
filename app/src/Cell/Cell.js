@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { cellModes } from '../App';
 
 const GRID_COLOR = '#ccc';
 const TOGGLE_COLOR = '#08BCD0';
@@ -34,7 +35,7 @@ export default class Cell extends Component {
           strokeWidth="1"
         />
         {
-          toggle === 1 &&
+          toggle === cellModes.EMPTY_TOGGLE &&
             <circle
               cx={x}
               cy={y}
@@ -45,7 +46,7 @@ export default class Cell extends Component {
             />
         }
         {
-          toggle === 2 &&
+          toggle === cellModes.FULL_TOGGLE &&
             <circle
               cx={x}
               cy={y}

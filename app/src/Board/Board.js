@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cell from '../Cell/Cell';
 import range from 'lodash.range';
+import { cellModes } from '../App';
 import './Board.css';
 
 const modes = {
@@ -16,7 +17,7 @@ export default class Board extends Component {
 
     for (let columnIndex = 0; columnIndex < width; columnIndex++) {
       for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-        this.noToggles[this.cellKey(rowIndex, columnIndex)] = 0;
+        this.noToggles[this.cellKey(rowIndex, columnIndex)] = cellModes.EMPTY_CELL;
       }
     }
 
@@ -49,11 +50,17 @@ export default class Board extends Component {
       const { toggles } = this.state;
       const cellKey = this.cellKey(rowIndex, columnIndex);
       const toggle = toggles[cellKey];
+      const nextToggle = toggle === cellModes.EMPTY_CELL ?
+        cellModes.EMPTY_TOGGLE :
+        (toggle === cellModes.EMPTY_TOGGLE ?
+          cellModes.FULL_TOGGLE :
+          cellModes.EMPTY_CELL
+        );
 
       this.setState({
         toggles: {
           ...toggles,
-          [cellKey]: (toggle + 1) % 3
+          [cellKey]: nextToggle
         }
       });
     } else if (mode === modes.LINES) {
