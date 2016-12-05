@@ -14,17 +14,17 @@ export default class Board extends Component {
   constructor({ width, height }) {
     super();
 
-    this.noToggles = {};
+    this.emptyCells = {};
 
-    for (let columnIndex = 0; columnIndex < width; columnIndex++) {
-      for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-        this.noToggles[this.cellKey(rowIndex, columnIndex)] = sample(cellModes); // cellModes.EMPTY_CELL;
+    for (let rowIndex = 0; rowIndex < height; rowIndex++) {
+      for (let columnIndex = 0; columnIndex < width; columnIndex++) {
+        this.emptyCells[this.cellKey(rowIndex, columnIndex)] = sample(cellModes); // cellModes.EMPTY_CELL;
       }
     }
 
     this.state = {
       mode: modes.LINES, // modes.TOGGLES,
-      toggles: this.noToggles,
+      cells: this.emptyCells,
       lineStart: null
     };
   }
@@ -35,7 +35,7 @@ export default class Board extends Component {
 
   onClearBoardClick = () => {
     this.setState({
-      toggles: this.noToggles
+      cells: this.emptyCells
     });
   };
 
@@ -46,9 +46,9 @@ export default class Board extends Component {
   };
 
   onCellClickTogglesMode(rowIndex, columnIndex) {
-    const { toggles } = this.state;
+    const { cells } = this.state;
     const cellKey = this.cellKey(rowIndex, columnIndex);
-    const toggle = toggles[cellKey];
+    const toggle = cells[cellKey];
     const nextToggle = toggle === cellModes.EMPTY_CELL ?
       cellModes.EMPTY_TOGGLE :
       (toggle === cellModes.EMPTY_TOGGLE ?
@@ -57,17 +57,17 @@ export default class Board extends Component {
       );
 
     this.setState({
-      toggles: {
-        ...toggles,
+      cells: {
+        ...cells,
         [cellKey]: nextToggle
       }
     });
   }
 
   onCellClickLinesMode(rowIndex, columnIndex) {
-    const { toggles, lineStart } = this.state;
+    const { cells, lineStart } = this.state;
     const cellKey = this.cellKey(rowIndex, columnIndex);
-    const toggle = toggles[cellKey];
+    const toggle = cells[cellKey];
 
     if (toggle === cellModes.EMPTY_CELL) {
       this.setState({
@@ -112,14 +112,14 @@ export default class Board extends Component {
 
   renderRow = rowIndex => {
     const { width, cellSize } = this.props;
-    const { toggles, lineStart } = this.state;
+    const { cells, lineStart } = this.state;
 
     return range(width).map(columnIndex =>
       <Cell
         rowIndex={rowIndex}
         columnIndex={columnIndex}
         size={cellSize}
-        toggle={toggles[this.cellKey(rowIndex, columnIndex)]}
+        mode={cells[this.cellKey(rowIndex, columnIndex)]}
         highlighted={lineStart !== null && rowIndex === lineStart.rowIndex && columnIndex === lineStart.columnIndex}
         onClick={this.onCellClick}
       />

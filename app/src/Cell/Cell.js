@@ -13,7 +13,7 @@ export default class Cell extends Component {
   };
 
   render() {
-    const { rowIndex, columnIndex, size, toggle, highlighted } = this.props;
+    const { rowIndex, columnIndex, size, mode, highlighted } = this.props;
     const x = size * (columnIndex + 0.5);
     const y = size * (rowIndex + 0.5);
 
@@ -46,7 +46,7 @@ export default class Cell extends Component {
             : null
         }
         {
-          toggle === cellModes.EMPTY_TOGGLE ?
+          mode === cellModes.EMPTY_TOGGLE ?
             <circle
               cx={x}
               cy={y}
@@ -58,7 +58,7 @@ export default class Cell extends Component {
             : null
         }
         {
-          toggle === cellModes.FULL_TOGGLE ?
+          mode === cellModes.FULL_TOGGLE ?
             <circle
               cx={x}
               cy={y}
