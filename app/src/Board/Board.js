@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Cell from '../Cell/Cell';
 import range from 'lodash.range';
+import sample from 'lodash.sample';
 import { cellModes } from '../App';
 import './Board.css';
 
@@ -17,7 +18,7 @@ export default class Board extends Component {
 
     for (let columnIndex = 0; columnIndex < width; columnIndex++) {
       for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-        this.noToggles[this.cellKey(rowIndex, columnIndex)] = cellModes.EMPTY_CELL;
+        this.noToggles[this.cellKey(rowIndex, columnIndex)] = sample(cellModes); // cellModes.EMPTY_CELL;
       }
     }
 
