@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { cellModes } from '../App';
 
 const GRID_COLOR = '#ccc';
-const TOGGLE_COLOR = '#08BCD0';
+const TOGGLE_COLOR = '#08bcd0';
+const TOGGLE_HIGHLIGHT_COLOR = '#ff5722';
 
 export default class Cell extends Component {
   onClick = () => {
@@ -12,7 +13,7 @@ export default class Cell extends Component {
   };
 
   render() {
-    const { rowIndex, columnIndex, size, toggle } = this.props;
+    const { rowIndex, columnIndex, size, toggle, highlighted } = this.props;
     const x = size * (columnIndex + 0.5);
     const y = size * (rowIndex + 0.5);
 
@@ -35,7 +36,17 @@ export default class Cell extends Component {
           strokeWidth="1"
         />
         {
-          toggle === cellModes.EMPTY_TOGGLE &&
+          highlighted ?
+            <circle
+              cx={x}
+              cy={y}
+              r={size * 0.4}
+              fill={TOGGLE_HIGHLIGHT_COLOR}
+            />
+            : null
+        }
+        {
+          toggle === cellModes.EMPTY_TOGGLE ?
             <circle
               cx={x}
               cy={y}
@@ -44,15 +55,17 @@ export default class Cell extends Component {
               strokeWidth="2"
               fill="#fff"
             />
+            : null
         }
         {
-          toggle === cellModes.FULL_TOGGLE &&
+          toggle === cellModes.FULL_TOGGLE ?
             <circle
               cx={x}
               cy={y}
               r={size * 0.3}
               fill={TOGGLE_COLOR}
             />
+            : null
         }
         <rect
           x={size * columnIndex}

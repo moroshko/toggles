@@ -23,8 +23,9 @@ export default class Board extends Component {
     }
 
     this.state = {
-      mode: modes.TOGGLES,
-      toggles: this.noToggles
+      mode: modes.LINES, // modes.TOGGLES,
+      toggles: this.noToggles,
+      lineStart: null
     };
   }
 
@@ -44,34 +45,74 @@ export default class Board extends Component {
     });
   };
 
+  onCellClickTogglesMode(rowIndex, columnIndex) {
+    const { toggles } = this.state;
+    const cellKey = this.cellKey(rowIndex, columnIndex);
+    const toggle = toggles[cellKey];
+    const nextToggle = toggle === cellModes.EMPTY_CELL ?
+      cellModes.EMPTY_TOGGLE :
+      (toggle === cellModes.EMPTY_TOGGLE ?
+        cellModes.FULL_TOGGLE :
+        cellModes.EMPTY_CELL
+      );
+
+    this.setState({
+      toggles: {
+        ...toggles,
+        [cellKey]: nextToggle
+      }
+    });
+  }
+
+  onCellClickLinesMode(rowIndex, columnIndex) {
+    const { toggles, lineStart } = this.state;
+    const cellKey = this.cellKey(rowIndex, columnIndex);
+    const toggle = toggles[cellKey];
+
+    if (toggle === cellModes.EMPTY_CELL) {
+      this.setState({
+        lineStart: null
+      });
+      return;
+    }
+
+    if (lineStart === null) {
+      this.setState({
+        lineStart: {
+          rowIndex,
+          columnIndex
+        }
+      });
+      return;
+    }
+
+    if (lineStart.rowIndex === rowIndex && lineStart.columnIndex === columnIndex) {
+      this.setState({
+        lineStart: null
+      });
+      return;
+    }
+
+    console.log(`Make line from ${lineStart.rowIndex},${lineStart.columnIndex} to ${rowIndex},${columnIndex}`);
+
+    this.setState({
+      lineStart: null
+    });
+  }
+
   onCellClick = (rowIndex, columnIndex) => {
     const { mode } = this.state;
 
     if (mode === modes.TOGGLES) {
-      const { toggles } = this.state;
-      const cellKey = this.cellKey(rowIndex, columnIndex);
-      const toggle = toggles[cellKey];
-      const nextToggle = toggle === cellModes.EMPTY_CELL ?
-        cellModes.EMPTY_TOGGLE :
-        (toggle === cellModes.EMPTY_TOGGLE ?
-          cellModes.FULL_TOGGLE :
-          cellModes.EMPTY_CELL
-        );
-
-      this.setState({
-        toggles: {
-          ...toggles,
-          [cellKey]: nextToggle
-        }
-      });
+      this.onCellClickTogglesMode(rowIndex, columnIndex);
     } else if (mode === modes.LINES) {
-      console.log('Lines mode:', rowIndex, columnIndex);
+      this.onCellClickLinesMode(rowIndex, columnIndex);
     }
   };
 
   renderRow = rowIndex => {
     const { width, cellSize } = this.props;
-    const { toggles } = this.state;
+    const { toggles, lineStart } = this.state;
 
     return range(width).map(columnIndex =>
       <Cell
@@ -79,6 +120,7 @@ export default class Board extends Component {
         columnIndex={columnIndex}
         size={cellSize}
         toggle={toggles[this.cellKey(rowIndex, columnIndex)]}
+        highlighted={lineStart !== null && rowIndex === lineStart.rowIndex && columnIndex === lineStart.columnIndex}
         onClick={this.onCellClick}
       />
     );
