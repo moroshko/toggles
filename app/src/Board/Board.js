@@ -1,27 +1,34 @@
 import React, { Component } from 'react';
 import Cell from '../Cell/Cell';
 import range from 'lodash.range';
+import './Board.css';
 
 export default class Board extends Component {
   constructor({ width, height }) {
     super();
 
-    let toggles = {};
+    this.noToggles = {};
 
     for (let columnIndex = 0; columnIndex < width; columnIndex++) {
       for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-        toggles[this.cellKey(rowIndex, columnIndex)] = 0;
+        this.noToggles[this.cellKey(rowIndex, columnIndex)] = 0;
       }
     }
 
     this.state = {
-      toggles
+      toggles: this.noToggles
     };
   }
 
   cellKey(rowIndex, columnIndex) {
     return `${rowIndex},${columnIndex}`;
   }
+
+  onClearBoardClick = () => {
+    this.setState({
+      toggles: this.noToggles
+    });
+  };
 
   onCellClick = (rowIndex, columnIndex) => {
     const { toggles } = this.state;
@@ -63,13 +70,21 @@ export default class Board extends Component {
     const boardHeight = height * cellSize;
 
     return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={boardWidth}
-        height={boardHeight}
-        viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
-        {this.renderGrid()}
-      </svg>
+      <div>
+        <div>
+          <button onClick={this.onClearBoardClick}>
+            Clear board
+          </button>
+        </div>
+        <svg
+          className="Board-svg"
+          xmlns="http://www.w3.org/2000/svg"
+          width={boardWidth}
+          height={boardHeight}
+          viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
+          {this.renderGrid()}
+        </svg>
+      </div>
     );
   }
 }
