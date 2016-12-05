@@ -8,9 +8,7 @@ export default class App extends Component {
       <Board
         width={5}
         height={4}
-        cellWidth={50}
-        cellHeight={50}
-        gridColor="#ccc"
+        cellSize={50}
       />
     );
   }

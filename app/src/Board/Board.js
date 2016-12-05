@@ -3,20 +3,49 @@ import Cell from '../Cell/Cell';
 import range from 'lodash.range';
 
 export default class Board extends Component {
-  onCellClick(rowIndex, columnIndex) {
-    console.log(rowIndex, columnIndex);
+  constructor({ width, height }) {
+    super();
+
+    let toggles = {};
+
+    for (let columnIndex = 0; columnIndex < width; columnIndex++) {
+      for (let rowIndex = 0; rowIndex < height; rowIndex++) {
+        toggles[this.cellKey(rowIndex, columnIndex)] = 0;
+      }
+    }
+
+    this.state = {
+      toggles
+    };
   }
 
+  cellKey(rowIndex, columnIndex) {
+    return `${rowIndex},${columnIndex}`;
+  }
+
+  onCellClick = (rowIndex, columnIndex) => {
+    const { toggles } = this.state;
+    const cellKey = this.cellKey(rowIndex, columnIndex);
+    const toggle = toggles[cellKey];
+
+    this.setState({
+      toggles: {
+        ...toggles,
+        [cellKey]: (toggle + 1) % 3
+      }
+    });
+  };
+
   renderRow = rowIndex => {
-    const { width, cellWidth, cellHeight, gridColor } = this.props;
+    const { width, cellSize } = this.props;
+    const { toggles } = this.state;
 
     return range(width).map(columnIndex =>
       <Cell
         rowIndex={rowIndex}
         columnIndex={columnIndex}
-        width={cellWidth}
-        height={cellHeight}
-        gridColor={gridColor}
+        size={cellSize}
+        toggle={toggles[this.cellKey(rowIndex, columnIndex)]}
         onClick={this.onCellClick}
       />
     );
@@ -29,9 +58,9 @@ export default class Board extends Component {
   }
 
   render() {
-    const { width, height, cellWidth, cellHeight } = this.props;
-    const boardWidth = width * cellWidth;
-    const boardHeight = height * cellHeight;
+    const { width, height, cellSize } = this.props;
+    const boardWidth = width * cellSize;
+    const boardHeight = height * cellSize;
 
     return (
       <svg
