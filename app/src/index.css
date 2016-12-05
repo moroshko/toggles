@@ -4,6 +4,6 @@ body {
   font-family: sans-serif;
 }
 
-button {
+* {
   user-select: none; /* To prevent text selection when board cells are double clicked */
 }
