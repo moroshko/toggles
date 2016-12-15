@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Cell from '../Cell/Cell';
+import Line from '../Line/Line';
 import range from 'lodash.range';
 import sample from 'lodash.sample';
 import { cellModes } from '../App';
@@ -25,12 +26,29 @@ export default class Board extends Component {
     this.state = {
       mode: modes.LINES, // modes.TOGGLES,
       cells: this.emptyCells,
+      lines: [],
       lineStart: null
     };
   }
 
   cellKey(rowIndex, columnIndex) {
     return `${rowIndex},${columnIndex}`;
+  }
+
+  lineKey(rowIndex1, columnIndex1, rowIndex2, columnIndex2) {
+    if (rowIndex1 < rowIndex2) {
+      return `${rowIndex1},${columnIndex1} - ${rowIndex2},${columnIndex2}`;
+    }
+
+    if (rowIndex1 > rowIndex2) {
+      return `${rowIndex2},${columnIndex2} - ${rowIndex1},${columnIndex1}`;
+    }
+
+    if (columnIndex1 < columnIndex2) {
+      return `${rowIndex1},${columnIndex1} - ${rowIndex2},${columnIndex2}`;
+    }
+
+    return `${rowIndex2},${columnIndex2} - ${rowIndex1},${columnIndex1}`;
   }
 
   onClearBoardClick = () => {
@@ -65,7 +83,7 @@ export default class Board extends Component {
   }
 
   onCellClickLinesMode(rowIndex, columnIndex) {
-    const { cells, lineStart } = this.state;
+    const { cells, lines, lineStart } = this.state;
     const cellKey = this.cellKey(rowIndex, columnIndex);
     const toggle = cells[cellKey];
 
@@ -93,9 +111,13 @@ export default class Board extends Component {
       return;
     }
 
-    console.log(`Make line from ${lineStart.rowIndex},${lineStart.columnIndex} to ${rowIndex},${columnIndex}`);
+    const lineKey = this.lineKey(lineStart.rowIndex, lineStart.columnIndex, rowIndex, columnIndex);
 
     this.setState({
+      lines: {
+        ...lines,
+        [lineKey]: true
+      },
       lineStart: null
     });
   }
@@ -126,10 +148,32 @@ export default class Board extends Component {
     );
   };
 
-  renderGrid() {
+  renderGridWithToggles() {
     const { height } = this.props;
 
     return range(height).map(this.renderRow);
+  }
+
+  renderLines() {
+    const { lines } = this.state;
+    const { cellSize } = this.props;
+
+    return Object.keys(lines).map(lineKey => {
+      const [fromCell, toCell] = lineKey.split(' - ');
+      const fromArr = fromCell.split(',').map(Number);
+      const toArr = toCell.split(',').map(Number);
+
+      return (
+        <Line
+          fromRowIndex={fromArr[0]}
+          fromColumnIndex={fromArr[1]}
+          toRowIndex={toArr[0]}
+          toColumnIndex={toArr[1]}
+          size={cellSize}
+          key={lineKey}
+        />
+      );
+    });
   }
 
   render() {
@@ -176,7 +220,8 @@ export default class Board extends Component {
           width={boardWidth}
           height={boardHeight}
           viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
-          {this.renderGrid()}
+          {this.renderLines()}
+          {this.renderGridWithToggles()}
         </svg>
       </div>
     );
