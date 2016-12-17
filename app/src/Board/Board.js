@@ -86,6 +86,7 @@ export default class Board extends Component {
     const toggleKey = this.toggleKey(row, column);
     const toggleValue = toggles[toggleKey];
 
+    // the cell is empty, create an empty toggle
     if (typeof toggleValue === 'undefined') {
       this.setState({
         toggles: {
@@ -96,6 +97,7 @@ export default class Board extends Component {
       return;
     }
 
+    // the toggle is empty, make it full
     if (toggleValue === false) {
       this.setState({
         toggles: {
@@ -106,6 +108,7 @@ export default class Board extends Component {
       return;
     }
 
+    // the toggle is full, remove it
     this.setState({
       toggles: omit(toggles, toggleKey)
     });
@@ -116,6 +119,7 @@ export default class Board extends Component {
     const toggleKey = this.toggleKey(row, column);
     const toggleValue = toggles[toggleKey];
 
+    // the cell is empty (no toggle), cancel the highlight
     if (typeof toggleValue === 'undefined') {
       this.setState({
         lineStart: null
@@ -123,6 +127,7 @@ export default class Board extends Component {
       return;
     }
 
+    // toggle clicked, highlight it
     if (lineStart === null) {
       this.setState({
         lineStart: {
@@ -133,6 +138,7 @@ export default class Board extends Component {
       return;
     }
 
+    // highlighted toggle clicked, cancel the highlight
     if (lineStart.row === row && lineStart.column === column) {
       this.setState({
         lineStart: null
@@ -142,13 +148,22 @@ export default class Board extends Component {
 
     const lineKey = this.lineKey(lineStart.row, lineStart.column, row, column);
 
-    this.setState({
-      lines: {
-        ...lines,
-        [lineKey]: true
-      },
-      lineStart: null
-    });
+    if (lines[lineKey]) {
+      // line already exist, remove it
+      this.setState({
+        lines: omit(lines, lineKey),
+        lineStart: null
+      });
+    } else {
+      // line doesn't exist yet, create it
+      this.setState({
+        lines: {
+          ...lines,
+          [lineKey]: true
+        },
+        lineStart: null
+      });
+    }
   }
 
   onCellClick = (row, column) => {
