@@ -2,8 +2,14 @@
   margin-top: 30px;
 }
 
+.Board-mode-title {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
 .Board-mode-label {
-  margin-left: 20px;
+  display: block;
+  margin: 0 0 10px 10px;
 }
 
 .Board-svg {

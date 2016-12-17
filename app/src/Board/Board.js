@@ -10,7 +10,8 @@ import './Board.css';
 
 const modes = {
   TOGGLES: 'TOGGLES',
-  LINES: 'LINES'
+  LINES: 'LINES',
+  PLAY: 'PLAY'
 };
 
 export default class Board extends Component {
@@ -260,7 +261,9 @@ export default class Board extends Component {
             </button>
           </div>
           <div className="Board-mode-container">
-            Mode:
+            <div className="Board-mode-title">
+              Mode:
+            </div>
             <label className="Board-mode-label">
               <input
                 type="radio"
@@ -280,6 +283,16 @@ export default class Board extends Component {
                 onChange={this.onModeChange}
               />
               {' Lines'}
+            </label>
+            <label className="Board-mode-label">
+              <input
+                type="radio"
+                name="board-mode"
+                value={modes.PLAY}
+                checked={mode === modes.PLAY}
+                onChange={this.onModeChange}
+              />
+              {' Play'}
             </label>
           </div>
         </div>
