@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import Cell from '../Cell/Cell';
+import GridCell from '../GridCell/GridCell';
 import Line from '../Line/Line';
+import Toggle from '../Toggle/Toggle';
+import ClickArea from '../ClickArea/ClickArea';
+import omit from 'lodash.omit';
 import range from 'lodash.range';
-import sample from 'lodash.sample';
-import { cellModes } from '../App';
+// import sample from 'lodash.sample';
 import './Board.css';
 
 const modes = {
@@ -15,45 +17,61 @@ export default class Board extends Component {
   constructor({ width, height }) {
     super();
 
-    this.emptyCells = {};
-
-    for (let rowIndex = 0; rowIndex < height; rowIndex++) {
-      for (let columnIndex = 0; columnIndex < width; columnIndex++) {
-        this.emptyCells[this.cellKey(rowIndex, columnIndex)] = sample(cellModes); // cellModes.EMPTY_CELL;
-      }
-    }
-
     this.state = {
-      mode: modes.LINES, // modes.TOGGLES,
-      cells: this.emptyCells,
-      lines: [],
+      mode: modes.TOGGLES,
+      toggles: {},
+      lines: {},
       lineStart: null
     };
   }
 
-  cellKey(rowIndex, columnIndex) {
-    return `${rowIndex},${columnIndex}`;
+  toggleKey(row, column) {
+    return `${row},${column}`;
   }
 
-  lineKey(rowIndex1, columnIndex1, rowIndex2, columnIndex2) {
-    if (rowIndex1 < rowIndex2) {
-      return `${rowIndex1},${columnIndex1} - ${rowIndex2},${columnIndex2}`;
+  parseToggleKey(toggleKey) {
+    const arr = toggleKey.split(',').map(Number);
+
+    return {
+      row: arr[0],
+      column: arr[1]
+    };
+  }
+
+  lineKey(row1, column1, row2, column2) {
+    if (row1 < row2) {
+      return `${row1},${column1} - ${row2},${column2}`;
     }
 
-    if (rowIndex1 > rowIndex2) {
-      return `${rowIndex2},${columnIndex2} - ${rowIndex1},${columnIndex1}`;
+    if (row1 > row2) {
+      return `${row2},${column2} - ${row1},${column1}`;
     }
 
-    if (columnIndex1 < columnIndex2) {
-      return `${rowIndex1},${columnIndex1} - ${rowIndex2},${columnIndex2}`;
+    if (column1 < column2) {
+      return `${row1},${column1} - ${row2},${column2}`;
     }
 
-    return `${rowIndex2},${columnIndex2} - ${rowIndex1},${columnIndex1}`;
+    return `${row2},${column2} - ${row1},${column1}`;
+  }
+
+  parseLineKey(lineKey) {
+    const [start, end] = lineKey.split(' - ');
+    const startArr = start.split(',').map(Number);
+    const endArr = end.split(',').map(Number);
+
+    return {
+      startRow: startArr[0],
+      startColumn: startArr[1],
+      endRow: endArr[0],
+      endColumn: endArr[1]
+    };
   }
 
   onClearBoardClick = () => {
     this.setState({
-      cells: this.emptyCells
+      toggles: {},
+      lines: {},
+      lineStart: null
     });
   };
 
@@ -63,31 +81,42 @@ export default class Board extends Component {
     });
   };
 
-  onCellClickTogglesMode(rowIndex, columnIndex) {
-    const { cells } = this.state;
-    const cellKey = this.cellKey(rowIndex, columnIndex);
-    const toggle = cells[cellKey];
-    const nextToggle = toggle === cellModes.EMPTY_CELL ?
-      cellModes.EMPTY_TOGGLE :
-      (toggle === cellModes.EMPTY_TOGGLE ?
-        cellModes.FULL_TOGGLE :
-        cellModes.EMPTY_CELL
-      );
+  onCellClick_TOGGLES(row, column) {
+    const { toggles } = this.state;
+    const toggleKey = this.toggleKey(row, column);
+    const toggleValue = toggles[toggleKey];
+
+    if (typeof toggleValue === 'undefined') {
+      this.setState({
+        toggles: {
+          ...toggles,
+          [toggleKey]: false
+        }
+      });
+      return;
+    }
+
+    if (toggleValue === false) {
+      this.setState({
+        toggles: {
+          ...toggles,
+          [toggleKey]: true
+        }
+      });
+      return;
+    }
 
     this.setState({
-      cells: {
-        ...cells,
-        [cellKey]: nextToggle
-      }
+      toggles: omit(toggles, toggleKey)
     });
   }
 
-  onCellClickLinesMode(rowIndex, columnIndex) {
-    const { cells, lines, lineStart } = this.state;
-    const cellKey = this.cellKey(rowIndex, columnIndex);
-    const toggle = cells[cellKey];
+  onCellClick_LINES(row, column) {
+    const { toggles, lines, lineStart } = this.state;
+    const toggleKey = this.toggleKey(row, column);
+    const toggleValue = toggles[toggleKey];
 
-    if (toggle === cellModes.EMPTY_CELL) {
+    if (typeof toggleValue === 'undefined') {
       this.setState({
         lineStart: null
       });
@@ -97,21 +126,21 @@ export default class Board extends Component {
     if (lineStart === null) {
       this.setState({
         lineStart: {
-          rowIndex,
-          columnIndex
+          row,
+          column
         }
       });
       return;
     }
 
-    if (lineStart.rowIndex === rowIndex && lineStart.columnIndex === columnIndex) {
+    if (lineStart.row === row && lineStart.column === column) {
       this.setState({
         lineStart: null
       });
       return;
     }
 
-    const lineKey = this.lineKey(lineStart.rowIndex, lineStart.columnIndex, rowIndex, columnIndex);
+    const lineKey = this.lineKey(lineStart.row, lineStart.column, row, column);
 
     this.setState({
       lines: {
@@ -122,36 +151,28 @@ export default class Board extends Component {
     });
   }
 
-  onCellClick = (rowIndex, columnIndex) => {
+  onCellClick = (row, column) => {
     const { mode } = this.state;
 
     if (mode === modes.TOGGLES) {
-      this.onCellClickTogglesMode(rowIndex, columnIndex);
+      this.onCellClick_TOGGLES(row, column);
     } else if (mode === modes.LINES) {
-      this.onCellClickLinesMode(rowIndex, columnIndex);
+      this.onCellClick_LINES(row, column);
     }
   };
 
-  renderRow = rowIndex => {
-    const { width, cellSize } = this.props;
-    const { cells, lineStart } = this.state;
+  renderGrid() {
+    const { height, width, cellSize } = this.props;
 
-    return range(width).map(columnIndex =>
-      <Cell
-        rowIndex={rowIndex}
-        columnIndex={columnIndex}
-        size={cellSize}
-        mode={cells[this.cellKey(rowIndex, columnIndex)]}
-        highlighted={lineStart !== null && rowIndex === lineStart.rowIndex && columnIndex === lineStart.columnIndex}
-        onClick={this.onCellClick}
-      />
+    return range(height).map(row =>
+      range(width).map(column =>
+        <GridCell
+          row={row}
+          column={column}
+          cellSize={cellSize}
+        />
+      )
     );
-  };
-
-  renderGridWithToggles() {
-    const { height } = this.props;
-
-    return range(height).map(this.renderRow);
   }
 
   renderLines() {
@@ -159,21 +180,54 @@ export default class Board extends Component {
     const { cellSize } = this.props;
 
     return Object.keys(lines).map(lineKey => {
-      const [fromCell, toCell] = lineKey.split(' - ');
-      const fromArr = fromCell.split(',').map(Number);
-      const toArr = toCell.split(',').map(Number);
+      const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
 
       return (
         <Line
-          fromRowIndex={fromArr[0]}
-          fromColumnIndex={fromArr[1]}
-          toRowIndex={toArr[0]}
-          toColumnIndex={toArr[1]}
-          size={cellSize}
+          startRow={startRow}
+          startColumn={startColumn}
+          endRow={endRow}
+          endColumn={endColumn}
+          cellSize={cellSize}
           key={lineKey}
         />
       );
     });
+  }
+
+  renderToggles() {
+    const { cellSize } = this.props;
+    const { toggles, lineStart } = this.state;
+
+    return Object.keys(toggles).map(toggleKey => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+
+      return (
+        <Toggle
+          row={row}
+          column={column}
+          cellSize={cellSize}
+          isFull={toggles[toggleKey]}
+          isHighlighted={lineStart !== null && row === lineStart.row && column === lineStart.column}
+          key={toggleKey}
+        />
+      );
+    });
+  }
+
+  renderClickAreas() {
+    const { height, width, cellSize } = this.props;
+
+    return range(height).map(row =>
+      range(width).map(column =>
+        <ClickArea
+          row={row}
+          column={column}
+          cellSize={cellSize}
+          onClick={this.onCellClick}
+        />
+      )
+    );
   }
 
   render() {
@@ -220,8 +274,10 @@ export default class Board extends Component {
           width={boardWidth}
           height={boardHeight}
           viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
+          {this.renderGrid()}
           {this.renderLines()}
-          {this.renderGridWithToggles()}
+          {this.renderToggles()}
+          {this.renderClickAreas()}
         </svg>
       </div>
     );
