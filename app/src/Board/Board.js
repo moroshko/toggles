@@ -104,8 +104,8 @@ export default class Board extends Component {
     });
   };
 
-  onCellClick_TOGGLES(row, column) {
-    const { toggles } = this.state;
+  onCellClick_TOGGLES(row, column, { shiftPressed }) {
+    const { toggles, lines } = this.state;
     const toggleKey = this.toggleKey(row, column);
     const toggleValue = toggles[toggleKey];
 
@@ -120,20 +120,31 @@ export default class Board extends Component {
       return;
     }
 
-    // the toggle is empty, make it full
-    if (toggleValue === false) {
-      this.setState({
-        toggles: {
-          ...toggles,
-          [toggleKey]: true
+    // shift + clicked the toggle, remove it and all the lines connected to it
+    if (shiftPressed) {
+      const newLines = Object.keys(lines).reduce((result, lineKey) => {
+        const [start, end] = lineKey.split(' - ');
+
+        if (start !== toggleKey && end !== toggleKey) {
+          result[lineKey] = true;
         }
+
+        return result;
+      }, {});
+
+      this.setState({
+        toggles: omit(toggles, toggleKey),
+        lines: newLines
       });
       return;
     }
 
-    // the toggle is full, remove it
+    // change empty toggle to full, or vice versa
     this.setState({
-      toggles: omit(toggles, toggleKey)
+      toggles: {
+        ...toggles,
+        [toggleKey]: !toggleValue
+      }
     });
   }
 
@@ -218,11 +229,11 @@ export default class Board extends Component {
     });
   }
 
-  onCellClick = (row, column) => {
+  onCellClick = (row, column, options) => {
     const { mode } = this.state;
 
     if (mode === modes.TOGGLES) {
-      this.onCellClick_TOGGLES(row, column);
+      this.onCellClick_TOGGLES(row, column, options);
     } else if (mode === modes.LINES) {
       this.onCellClick_LINES(row, column);
     } else if (mode === modes.PLAY) {

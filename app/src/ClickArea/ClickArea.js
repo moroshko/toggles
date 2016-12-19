@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 
 export default class ClickArea extends Component {
-  onClick = () => {
+  onClick = event => {
     const { row, column, onClick } = this.props;
 
-    onClick(row, column);
+    onClick(row, column, {
+      shiftPressed: event.shiftKey
+    });
   };
 
   render() {
