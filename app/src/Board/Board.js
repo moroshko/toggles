@@ -93,6 +93,18 @@ export default class Board extends Component {
     };
   }
 
+  areAllTogglesFull() {
+    const { toggles } = this.state;
+
+    for (const toggleKey in toggles) {
+      if (toggles[toggleKey] === false) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   onResetClick = () => {
     this.setState(this.initialState);
   };
@@ -324,40 +336,79 @@ export default class Board extends Component {
               Reset
             </button>
           </div>
-          <div className="Board-mode-container">
-            <div className="Board-mode-title">
-              Mode:
+          <div className="Board-mode-and-instructions-container">
+            <div>
+              <div className="Board-title">
+                Mode:
+              </div>
+              <label className="Board-mode-label">
+                <input
+                  type="radio"
+                  name="board-mode"
+                  value={modes.TOGGLES}
+                  checked={mode === modes.TOGGLES}
+                  onChange={this.onModeChange}
+                />
+                {' Toggles'}
+              </label>
+              <label className="Board-mode-label">
+                <input
+                  type="radio"
+                  name="board-mode"
+                  value={modes.LINES}
+                  checked={mode === modes.LINES}
+                  onChange={this.onModeChange}
+                />
+                {' Lines'}
+              </label>
+              <label className="Board-mode-label">
+                <input
+                  type="radio"
+                  name="board-mode"
+                  value={modes.PLAY}
+                  checked={mode === modes.PLAY}
+                  onChange={this.onModeChange}
+                />
+                {' Play'}
+              </label>
             </div>
-            <label className="Board-mode-label">
-              <input
-                type="radio"
-                name="board-mode"
-                value={modes.TOGGLES}
-                checked={mode === modes.TOGGLES}
-                onChange={this.onModeChange}
-              />
-              {' Toggles'}
-            </label>
-            <label className="Board-mode-label">
-              <input
-                type="radio"
-                name="board-mode"
-                value={modes.LINES}
-                checked={mode === modes.LINES}
-                onChange={this.onModeChange}
-              />
-              {' Lines'}
-            </label>
-            <label className="Board-mode-label">
-              <input
-                type="radio"
-                name="board-mode"
-                value={modes.PLAY}
-                checked={mode === modes.PLAY}
-                onChange={this.onModeChange}
-              />
-              {' Play'}
-            </label>
+            <div className="Board-instructions-container">
+              <div className="Board-title">
+                Instructions:
+              </div>
+              <div className="Board-instructions-content">
+                {
+                  mode === modes.TOGGLES ?
+                    <div>
+                      Click to add/toggle toggles.<br /><br />
+                      Shift+Click to remove a toggle and all lines connected to it.
+                    </div>
+                    : null
+                }
+                {
+                  mode === modes.LINES ?
+                    <div>
+                      To add/remove a line,
+                      click on one toggle, then on another one.
+                    </div>
+                    : null
+                }
+                {
+                  mode === modes.PLAY ?
+                    <div>
+                      Click on toggles until they all become full.
+                      {
+                        this.areAllTogglesFull() ?
+                          <div className="Board-instructions-well-done">
+                            Well Done!
+                          </div>
+                          : null
+                      }
+                    </div>
+                    : null
+                }
+              </div>
+            </div>
           </div>
         </div>
         <svg

@@ -1,8 +1,9 @@
-.Board-mode-container {
+.Board-mode-and-instructions-container {
+  display: flex;
   margin-top: 30px;
 }
 
-.Board-mode-title {
+.Board-title {
   margin-bottom: 20px;
   font-weight: bold;
 }
@@ -10,6 +11,20 @@
 .Board-mode-label {
   display: block;
   margin: 0 0 10px 10px;
+}
+
+.Board-instructions-container {
+  margin-left: 100px;
+}
+
+.Board-instructions-content {
+  width: 250px;
+}
+
+.Board-instructions-well-done {
+  margin-top: 22px;
+  color: #16ac16;
+  font-weight: bold;
 }
 
 .Board-svg {
