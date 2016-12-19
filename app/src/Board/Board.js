@@ -18,10 +18,33 @@ export default class Board extends Component {
   constructor({ width, height }) {
     super();
 
+    // this.initialState = {
+    //   mode: modes.TOGGLES,
+    //   toggles: {},
+    //   lines: {},
+    //   lineStart: null
+    // };
+
     this.initialState = {
-      mode: modes.TOGGLES,
-      toggles: {},
-      lines: {},
+      mode: modes.LINES,
+      toggles: {
+        [this.toggleKey(0, 2)]: false,
+        [this.toggleKey(1, 1)]: false,
+        [this.toggleKey(1, 3)]: false,
+        [this.toggleKey(3, 0)]: false,
+        [this.toggleKey(3, 2)]: false,
+        [this.toggleKey(3, 4)]: false
+      },
+      lines: {
+        [this.lineKey(0, 2, 1, 1)]: true,
+        [this.lineKey(0, 2, 1, 3)]: true,
+        [this.lineKey(1, 1, 3, 0)]: true,
+        [this.lineKey(1, 1, 3, 2)]: true,
+        [this.lineKey(1, 3, 3, 2)]: true,
+        [this.lineKey(1, 3, 3, 4)]: true,
+        [this.lineKey(3, 0, 3, 2)]: true,
+        [this.lineKey(3, 2, 3, 4)]: true
+      },
       lineStart: null
     };
 
@@ -76,7 +99,8 @@ export default class Board extends Component {
 
   onModeChange = event => {
     this.setState({
-      mode: event.target.value
+      mode: event.target.value,
+      lineStart: null
     });
   };
 
@@ -165,6 +189,19 @@ export default class Board extends Component {
     }
   }
 
+  onCellClick_PLAY(row, column) {
+    const { toggles } = this.state;
+    const toggleKey = this.toggleKey(row, column);
+    const toggleValue = toggles[toggleKey];
+
+    // the cell is empty (no toggle), do nothing
+    if (typeof toggleValue === 'undefined') {
+      return;
+    }
+
+    console.log(row, column);
+  }
+
   onCellClick = (row, column) => {
     const { mode } = this.state;
 
@@ -172,6 +209,8 @@ export default class Board extends Component {
       this.onCellClick_TOGGLES(row, column);
     } else if (mode === modes.LINES) {
       this.onCellClick_LINES(row, column);
+    } else if (mode === modes.PLAY) {
+      this.onCellClick_PLAY(row, column);
     }
   };
 
@@ -249,6 +288,11 @@ export default class Board extends Component {
     const { mode } = this.state;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
+
+    console.log('--- TOGGLES ---');
+    console.log(this.state.toggles);
+    console.log('--- LINES ---');
+    console.log(this.state.lines);
 
     return (
       <div>
