@@ -18,12 +18,14 @@ export default class Board extends Component {
   constructor({ width, height }) {
     super();
 
-    this.state = {
+    this.initialState = {
       mode: modes.TOGGLES,
       toggles: {},
       lines: {},
       lineStart: null
     };
+
+    this.state = this.initialState;
   }
 
   toggleKey(row, column) {
@@ -68,12 +70,8 @@ export default class Board extends Component {
     };
   }
 
-  onClearBoardClick = () => {
-    this.setState({
-      toggles: {},
-      lines: {},
-      lineStart: null
-    });
+  onResetClick = () => {
+    this.setState(this.initialState);
   };
 
   onModeChange = event => {
@@ -256,8 +254,8 @@ export default class Board extends Component {
       <div>
         <div>
           <div>
-            <button onClick={this.onClearBoardClick}>
-              Clear board
+            <button onClick={this.onResetClick}>
+              Reset
             </button>
           </div>
           <div className="Board-mode-container">
@@ -302,7 +300,9 @@ export default class Board extends Component {
           width={boardWidth}
           height={boardHeight}
           viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
-          {this.renderGrid()}
+          {
+            mode !== modes.PLAY ? this.renderGrid() : null
+          }
           {this.renderLines()}
           {this.renderToggles()}
           {this.renderClickAreas()}
