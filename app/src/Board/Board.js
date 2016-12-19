@@ -26,7 +26,7 @@ export default class Board extends Component {
     // };
 
     this.initialState = {
-      mode: modes.LINES,
+      mode: modes.PLAY,
       toggles: {
         [this.toggleKey(0, 2)]: false,
         [this.toggleKey(1, 1)]: false,
@@ -190,7 +190,7 @@ export default class Board extends Component {
   }
 
   onCellClick_PLAY(row, column) {
-    const { toggles } = this.state;
+    const { toggles, lines } = this.state;
     const toggleKey = this.toggleKey(row, column);
     const toggleValue = toggles[toggleKey];
 
@@ -199,7 +199,23 @@ export default class Board extends Component {
       return;
     }
 
-    console.log(row, column);
+    let newToggles = { ...toggles };
+
+    newToggles[toggleKey] = !newToggles[toggleKey];
+
+    Object.keys(lines).forEach(lineKey => {
+      const [start, end] = lineKey.split(' - ');
+
+      if (start === toggleKey) {
+        newToggles[end] = !newToggles[end];
+      } else if (end === toggleKey) {
+        newToggles[start] = !newToggles[start];
+      }
+    });
+
+    this.setState({
+      toggles: newToggles
+    });
   }
 
   onCellClick = (row, column) => {
@@ -288,11 +304,6 @@ export default class Board extends Component {
     const { mode } = this.state;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
-
-    console.log('--- TOGGLES ---');
-    console.log(this.state.toggles);
-    console.log('--- LINES ---');
-    console.log(this.state.lines);
 
     return (
       <div>
