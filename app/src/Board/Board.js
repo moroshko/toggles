@@ -418,7 +418,7 @@ export default class Board extends Component {
           height={boardHeight}
           viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
           {
-            mode !== modes.PLAY ? this.renderGrid() : null
+            mode === modes.TOGGLES ? this.renderGrid() : null
           }
           {this.renderLines()}
           {this.renderToggles()}
