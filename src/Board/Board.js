@@ -3,6 +3,7 @@ import GridCell from '../GridCell/GridCell';
 import Line from '../Line/Line';
 import Toggle from '../Toggle/Toggle';
 import ClickArea from '../ClickArea/ClickArea';
+import findSolution from '../solver';
 import omit from 'lodash.omit';
 import range from 'lodash.range';
 // import sample from 'lodash.sample';
@@ -332,9 +333,11 @@ export default class Board extends Component {
 
   render() {
     const { width, height, cellSize } = this.props;
-    const { showSolution, mode } = this.state;
+    const { showSolution, mode, toggles, lines } = this.state;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
+
+    console.log(findSolution(toggles, lines));
 
     return (
       <div>

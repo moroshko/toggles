@@ -25,7 +25,7 @@ const incrementPointers = (pointers, max) => {
   let result = [], len = pointers.length - 1;
 
   for (let i = len; i >= 0; i--) {
-    if (pointers[i] === max || i < len && pointers[i] + 1 === pointers[i + 1]) {
+    if (pointers[i] === max || (i < len && pointers[i] + 1 === pointers[i + 1])) {
       result.unshift(pointers[i]);
     } else {
       result = pointers.slice(0, i).concat(pointers[i] + 1);
@@ -54,7 +54,7 @@ const combinationsOfSize = (array, size) => {
   return result;
 };
 
-module.exports = array => {
+export default array => {
   let result = [];
 
   for (let size = 0, len = array.length; size <= len; size++) {
