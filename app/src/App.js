@@ -5,7 +5,7 @@ export default class App extends Component {
   render() {
     return (
       <Board
-        width={5}
+        width={7}
         height={4}
         cellSize={50}
       />

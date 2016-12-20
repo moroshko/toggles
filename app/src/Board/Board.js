@@ -15,7 +15,7 @@ const modes = {
 };
 
 export default class Board extends Component {
-  constructor({ width, height }) {
+  constructor() {
     super();
 
     // this.initialState = {
@@ -26,24 +26,24 @@ export default class Board extends Component {
     // };
 
     this.initialState = {
+      showSolution: false,
       mode: modes.PLAY,
       toggles: {
-        [this.toggleKey(0, 2)]: false,
-        [this.toggleKey(1, 1)]: false,
-        [this.toggleKey(1, 3)]: false,
-        [this.toggleKey(3, 0)]: false,
-        [this.toggleKey(3, 2)]: false,
-        [this.toggleKey(3, 4)]: false
+        [this.toggleKey(0, 1)]: false,
+        [this.toggleKey(0, 3)]: false,
+        [this.toggleKey(0, 5)]: false,
+        [this.toggleKey(2, 1)]: false,
+        [this.toggleKey(2, 3)]: false,
+        [this.toggleKey(2, 5)]: false
       },
       lines: {
-        [this.lineKey(0, 2, 1, 1)]: true,
-        [this.lineKey(0, 2, 1, 3)]: true,
-        [this.lineKey(1, 1, 3, 0)]: true,
-        [this.lineKey(1, 1, 3, 2)]: true,
-        [this.lineKey(1, 3, 3, 2)]: true,
-        [this.lineKey(1, 3, 3, 4)]: true,
-        [this.lineKey(3, 0, 3, 2)]: true,
-        [this.lineKey(3, 2, 3, 4)]: true
+        [this.lineKey(0, 1, 0, 3)]: true,
+        [this.lineKey(0, 3, 0, 5)]: true,
+        [this.lineKey(2, 1, 2, 3)]: true,
+        [this.lineKey(2, 3, 2, 5)]: true,
+        [this.lineKey(0, 1, 2, 1)]: true,
+        [this.lineKey(0, 3, 2, 3)]: true,
+        [this.lineKey(0, 5, 2, 5)]: true
       },
       lineStart: null
     };
@@ -107,6 +107,14 @@ export default class Board extends Component {
 
   onResetClick = () => {
     this.setState(this.initialState);
+  };
+
+  onSolutionClick = () => {
+    const { showSolution } = this.state;
+
+    this.setState({
+      showSolution: !showSolution
+    });
   };
 
   onModeChange = event => {
@@ -324,7 +332,7 @@ export default class Board extends Component {
 
   render() {
     const { width, height, cellSize } = this.props;
-    const { mode } = this.state;
+    const { showSolution, mode } = this.state;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
 
@@ -333,7 +341,12 @@ export default class Board extends Component {
         <div>
           <div>
             <button onClick={this.onResetClick}>
-              Reset
+              Reset board
+            </button>
+          </div>
+          <div className="Board-solution-container">
+            <button onClick={this.onSolutionClick}>
+              {showSolution ? 'Hide solution' : 'Show solution'}
             </button>
           </div>
           <div className="Board-mode-and-instructions-container">

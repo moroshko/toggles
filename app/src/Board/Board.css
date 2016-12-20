@@ -1,6 +1,10 @@
+.Board-solution-container {
+  margin-top: 30px;
+}
+
 .Board-mode-and-instructions-container {
   display: flex;
-  margin-top: 30px;
+  margin-top: 50px;
 }
 
 .Board-title {
