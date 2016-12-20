@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 
 const TOGGLE_COLOR = '#08bcd0';
 const TOGGLE_HIGHLIGHT_COLOR = '#ff5722';
+const TOGGLE_SOLUTION_COLOR = '#ff0000';
 
 export default class Toggle extends Component {
   render() {
-    const { row, column, cellSize, isFull, isHighlighted } = this.props;
+    const { row, column, cellSize, isFull, isHighlighted, isInSolution } = this.props;
     const x = cellSize * (column + 0.5);
     const y = cellSize * (row + 0.5);
 
@@ -37,6 +38,16 @@ export default class Toggle extends Component {
               strokeWidth="2"
               fill="#fff"
             />
+        }
+        {
+          isInSolution ?
+            <circle
+              cx={x}
+              cy={y}
+              r={cellSize * 0.1}
+              fill={TOGGLE_SOLUTION_COLOR}
+            />
+            : null
         }
       </g>
     );

@@ -296,7 +296,7 @@ export default class Board extends Component {
     });
   }
 
-  renderToggles() {
+  renderToggles(solution) {
     const { cellSize } = this.props;
     const { toggles, lineStart } = this.state;
 
@@ -310,6 +310,7 @@ export default class Board extends Component {
           cellSize={cellSize}
           isFull={toggles[toggleKey]}
           isHighlighted={lineStart !== null && row === lineStart.row && column === lineStart.column}
+          isInSolution={solution.indexOf(toggleKey) > -1}
           key={toggleKey}
         />
       );
@@ -334,10 +335,9 @@ export default class Board extends Component {
   render() {
     const { width, height, cellSize } = this.props;
     const { showSolution, mode, toggles, lines } = this.state;
+    const solution = (mode === modes.PLAY && showSolution) ? findSolution(toggles, lines) : null;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
-
-    console.log(findSolution(toggles, lines));
 
     return (
       <div>
@@ -437,7 +437,7 @@ export default class Board extends Component {
             mode === modes.TOGGLES ? this.renderGrid() : null
           }
           {this.renderLines()}
-          {this.renderToggles()}
+          {this.renderToggles(solution || [])}
           {this.renderClickAreas()}
         </svg>
       </div>
