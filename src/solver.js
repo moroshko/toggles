@@ -59,8 +59,17 @@ const getConnections = (position, lines) => {
 };
 
 const getMemoKey = (position, lines) => {
-  return 'TODO';
+  const positionMemo = Object.keys(position).reduce((result, toggleKey) => {
+    return `${result}${toggleKey}_${position[toggleKey] ? '1' : '0'}|`;
+  }, '');
+  const linesMemo = Object.keys(lines).reduce((result, lineKey) => {
+    return `${result}${lineKey}|`;
+  }, '');
+
+  return `${positionMemo}|${linesMemo}`;
 };
+
+let memo = {};
 
 // position = {
 //   '0,1': false,
@@ -81,16 +90,22 @@ const getMemoKey = (position, lines) => {
 export default (position, lines) => {
   const memoKey = getMemoKey(position, lines);
 
-  console.log('memoKey:', memoKey);
+  if (memo[memoKey]) {
+    return memo[memoKey];
+  }
 
   const connections = getConnections(position, lines);
   const potentialSolutions = combinations(Object.keys(position));
+  let solution = null;
 
   for (let i = 0, len = potentialSolutions.length; i < len; i++) {
     if (isSolution(makeMoves(position, connections, potentialSolutions[i]))) {
-      return potentialSolutions[i];
+      solution = potentialSolutions[i];
+      break;
     }
   }
 
-  return null;
+  memo[memoKey] = solution;
+
+  return solution;
 };
