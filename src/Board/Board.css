@@ -37,6 +37,17 @@
   font-weight: bold;
 }
 
-.Board-svg {
+.Board-svg-container {
   margin-top: 50px;
+  position: relative;
+}
+
+.Board-arrow-button {
+  position: absolute;
+  opacity: 0.3;
+  transition: opacity 0.1s ease-out;
+}
+
+.Board-arrow-button:hover {
+  opacity: 1;
 }

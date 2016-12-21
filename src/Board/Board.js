@@ -28,7 +28,7 @@ export default class Board extends Component {
 
     this.initialState = {
       showSolution: false,
-      mode: modes.PLAY,
+      mode: modes.TOGGLES,
       toggles: {
         [this.toggleKey(0, 1)]: false,
         [this.toggleKey(0, 3)]: false,
@@ -264,6 +264,35 @@ export default class Board extends Component {
     );
   }
 
+  renderArrows() {
+    return [
+      <button className="Board-arrow-button" style={{ left: -25, top: 0 }}>
+        →
+      </button>,
+      <button className="Board-arrow-button" style={{ left: 0, top: -20 }}>
+        ↓
+      </button>,
+      <button className="Board-arrow-button" style={{ right: 0, top: -20 }}>
+        ↑
+      </button>,
+      <button className="Board-arrow-button" style={{ right: -25, top: 0 }}>
+        →
+      </button>,
+      <button className="Board-arrow-button" style={{ right: -25, bottom: 0 }}>
+        ←
+      </button>,
+      <button className="Board-arrow-button" style={{ right: 0, bottom: -20 }}>
+        ↑
+      </button>,
+      <button className="Board-arrow-button" style={{ left: 0, bottom: -20 }}>
+        ↓
+      </button>,
+      <button className="Board-arrow-button" style={{ left: -25, bottom: 0 }}>
+        ←
+      </button>
+    ];
+  }
+
   renderLines() {
     const { lines } = this.state;
     const { cellSize } = this.props;
@@ -420,19 +449,23 @@ export default class Board extends Component {
             </div>
           </div>
         </div>
-        <svg
-          className="Board-svg"
-          xmlns="http://www.w3.org/2000/svg"
-          width={boardWidth}
-          height={boardHeight}
-          viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
+        <div className="Board-svg-container" style={{ width: boardWidth, height: boardHeight }}>
           {
-            mode === modes.TOGGLES ? this.renderGrid() : null
+            mode === modes.TOGGLES ? this.renderArrows() : null
           }
-          {this.renderLines()}
-          {this.renderToggles(solution)}
-          {this.renderClickAreas()}
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={boardWidth}
+            height={boardHeight}
+            viewBox={`0 0 ${boardWidth} ${boardHeight}`}>
+            {
+              mode === modes.TOGGLES ? this.renderGrid() : null
+            }
+            {this.renderLines()}
+            {this.renderToggles(solution)}
+            {this.renderClickAreas()}
+          </svg>
+        </div>
       </div>
     );
   }
