@@ -94,18 +94,6 @@ export default class Board extends Component {
     };
   }
 
-  areAllTogglesFull() {
-    const { toggles } = this.state;
-
-    for (const toggleKey in toggles) {
-      if (toggles[toggleKey] === false) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   onResetClick = () => {
     this.setState(this.initialState);
   };
@@ -298,7 +286,8 @@ export default class Board extends Component {
 
   renderToggles(solution) {
     const { cellSize } = this.props;
-    const { toggles, lineStart } = this.state;
+    const { showSolution, toggles, lineStart } = this.state;
+    const solutionExists = showSolution && solution !== null;
 
     return Object.keys(toggles).map(toggleKey => {
       const { row, column } = this.parseToggleKey(toggleKey);
@@ -310,7 +299,7 @@ export default class Board extends Component {
           cellSize={cellSize}
           isFull={toggles[toggleKey]}
           isHighlighted={lineStart !== null && row === lineStart.row && column === lineStart.column}
-          isInSolution={solution.indexOf(toggleKey) > -1}
+          isInSolution={solutionExists && solution.indexOf(toggleKey) > -1}
           key={toggleKey}
         />
       );
@@ -335,7 +324,7 @@ export default class Board extends Component {
   render() {
     const { width, height, cellSize } = this.props;
     const { showSolution, mode, toggles, lines } = this.state;
-    const solution = (mode === modes.PLAY && showSolution) ? findSolution(toggles, lines) : null;
+    const solution = mode === modes.PLAY ? findSolution(toggles, lines) : null;
     const boardWidth = width * cellSize;
     const boardHeight = height * cellSize;
 
@@ -345,11 +334,6 @@ export default class Board extends Component {
           <div>
             <button onClick={this.onResetClick}>
               Reset board
-            </button>
-          </div>
-          <div className="Board-solution-container">
-            <button onClick={this.onSolutionClick}>
-              {showSolution ? 'Hide solution' : 'Show solution'}
             </button>
           </div>
           <div className="Board-mode-and-instructions-container">
@@ -414,11 +398,20 @@ export default class Board extends Component {
                     <div>
                       Click on toggles until they all become full.
                       {
-                        this.areAllTogglesFull() ?
+                        solution !== null && solution.length === 0 ?
                           <div className="Board-instructions-well-done">
                             Well Done!
+                          </div> :
+                          <div className="Board-solution-container">
+                            <button onClick={this.onSolutionClick}>
+                              {showSolution ? 'Hide solution' : 'Show solution'}
+                            </button>
+                            {
+                              showSolution && solution === null ?
+                                <span className="Board-unsolvable">Unsolvable!</span>
+                                : null
+                            }
                           </div>
-                          : null
                       }
                     </div>
                     : null
@@ -437,7 +430,7 @@ export default class Board extends Component {
             mode === modes.TOGGLES ? this.renderGrid() : null
           }
           {this.renderLines()}
-          {this.renderToggles(solution || [])}
+          {this.renderToggles(solution)}
           {this.renderClickAreas()}
         </svg>
       </div>
