@@ -273,6 +273,66 @@ export default class Board extends Component {
     );
   }
 
+  removeFirstColumn = () => {
+    const { width, toggles, lines } = this.state;
+    const newToggles = Object.keys(toggles).reduce((result, toggleKey) => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+      result[this.toggleKey(row, column - 1)] = toggles[toggleKey];
+      return result;
+    }, {});
+    const newLines = Object.keys(lines).reduce((result, lineKey) => {
+      const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
+      result[this.lineKey(startRow, startColumn - 1, endRow, endColumn - 1)] = lines;
+      return result;
+    }, {});
+
+    this.setState({
+      width: width - 1,
+      toggles: newToggles,
+      lines: newLines
+    });
+  };
+
+  removeFirstRow = () => {
+    const { height, toggles, lines } = this.state;
+    const newToggles = Object.keys(toggles).reduce((result, toggleKey) => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+      result[this.toggleKey(row - 1, column)] = toggles[toggleKey];
+      return result;
+    }, {});
+    const newLines = Object.keys(lines).reduce((result, lineKey) => {
+      const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
+      result[this.lineKey(startRow - 1, startColumn, endRow - 1, endColumn)] = lines;
+      return result;
+    }, {});
+
+    this.setState({
+      height: height - 1,
+      toggles: newToggles,
+      lines: newLines
+    });
+  };
+
+  addFirstRow = () => {
+    const { height, toggles, lines } = this.state;
+    const newToggles = Object.keys(toggles).reduce((result, toggleKey) => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+      result[this.toggleKey(row + 1, column)] = toggles[toggleKey];
+      return result;
+    }, {});
+    const newLines = Object.keys(lines).reduce((result, lineKey) => {
+      const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
+      result[this.lineKey(startRow + 1, startColumn, endRow + 1, endColumn)] = lines;
+      return result;
+    }, {});
+
+    this.setState({
+      height: height + 1,
+      toggles: newToggles,
+      lines: newLines
+    });
+  };
+
   addLastColumn = () => {
     const { width } = this.state;
 
@@ -305,6 +365,26 @@ export default class Board extends Component {
     });
   };
 
+  addFirstColumn = () => {
+    const { width, toggles, lines } = this.state;
+    const newToggles = Object.keys(toggles).reduce((result, toggleKey) => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+      result[this.toggleKey(row, column + 1)] = toggles[toggleKey];
+      return result;
+    }, {});
+    const newLines = Object.keys(lines).reduce((result, lineKey) => {
+      const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
+      result[this.lineKey(startRow, startColumn + 1, endRow, endColumn + 1)] = lines;
+      return result;
+    }, {});
+
+    this.setState({
+      width: width + 1,
+      toggles: newToggles,
+      lines: newLines
+    });
+  };
+
   renderArrows() {
     const { width, height, toggles } = this.state;
     let canRemoveFirstRow = true, canRemoveLastRow = true;
@@ -331,6 +411,7 @@ export default class Board extends Component {
         <button
           className="Board-arrow-button"
           style={{ left: -25, top: 0 }}
+          onClick={this.removeFirstColumn}
           key="remove-first-column"
         >
           →
@@ -341,6 +422,7 @@ export default class Board extends Component {
         <button
           className="Board-arrow-button"
           style={{ left: 0, top: -20 }}
+          onClick={this.removeFirstRow}
           key="remove-first-row"
         >
           ↓
@@ -350,6 +432,7 @@ export default class Board extends Component {
       <button
         className="Board-arrow-button"
         style={{ right: 0, top: -20 }}
+        onClick={this.addFirstRow}
         key="add-first-row"
       >
         ↑
@@ -398,6 +481,7 @@ export default class Board extends Component {
       <button
         className="Board-arrow-button"
         style={{ left: -25, bottom: 0 }}
+        onClick={this.addFirstColumn}
         key="add-first-column"
       >
         ←
