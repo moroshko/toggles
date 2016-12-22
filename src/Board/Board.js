@@ -265,29 +265,65 @@ export default class Board extends Component {
   }
 
   renderArrows() {
+    const { width, height } = this.props;
+    const { toggles } = this.state;
+    let canRemoveFirstRow = true, canRemoveLastRow = true;
+    let canRemoveFirstColumn = true, canRemoveLastColumn = true;
+
+    Object.keys(toggles).forEach(toggleKey => {
+      const { row, column } = this.parseToggleKey(toggleKey);
+
+      if (row === 0) {
+        canRemoveFirstRow = false;
+      } else if (row === height - 1) {
+        canRemoveLastRow = false;
+      }
+
+      if (column === 0) {
+        canRemoveFirstColumn = false;
+      } else if (column === width - 1) {
+        canRemoveLastColumn = false;
+      }
+    });
+
     return [
-      <button className="Board-arrow-button" style={{ left: -25, top: 0 }}>
-        →
-      </button>,
-      <button className="Board-arrow-button" style={{ left: 0, top: -20 }}>
-        ↓
-      </button>,
-      <button className="Board-arrow-button" style={{ right: 0, top: -20 }}>
+      canRemoveFirstColumn ?
+        <button className="Board-arrow-button" style={{ left: -25, top: 0 }} key="remove-first-column">
+          →
+        </button>
+        : null
+      ,
+      canRemoveFirstRow ?
+        <button className="Board-arrow-button" style={{ left: 0, top: -20 }} key="remove-first-row">
+          ↓
+        </button>
+        : null
+      ,
+      <button className="Board-arrow-button" style={{ right: 0, top: -20 }} key="add-first-row">
         ↑
-      </button>,
-      <button className="Board-arrow-button" style={{ right: -25, top: 0 }}>
+      </button>
+      ,
+      <button className="Board-arrow-button" style={{ right: -25, top: 0 }} key="add-last-column">
         →
-      </button>,
-      <button className="Board-arrow-button" style={{ right: -25, bottom: 0 }}>
-        ←
-      </button>,
-      <button className="Board-arrow-button" style={{ right: 0, bottom: -20 }}>
-        ↑
-      </button>,
-      <button className="Board-arrow-button" style={{ left: 0, bottom: -20 }}>
+      </button>
+      ,
+      canRemoveLastColumn ?
+        <button className="Board-arrow-button" style={{ right: -25, bottom: 0 }} key="remove-last-column">
+          ←
+        </button>
+        : null
+      ,
+      canRemoveLastRow ?
+        <button className="Board-arrow-button" style={{ right: 0, bottom: -20 }} key="remove-last-row">
+          ↑
+        </button>
+        : null
+      ,
+      <button className="Board-arrow-button" style={{ left: 0, bottom: -20 }} key="add-last-row">
         ↓
-      </button>,
-      <button className="Board-arrow-button" style={{ left: -25, bottom: 0 }}>
+      </button>
+      ,
+      <button className="Board-arrow-button" style={{ left: -25, bottom: 0 }} key="add-first-column">
         ←
       </button>
     ];
