@@ -9,6 +9,7 @@ import range from 'lodash.range';
 // import sample from 'lodash.sample';
 import './Board.css';
 
+const CELL_SIZE = 50;
 const modes = {
   TOGGLES: 'TOGGLES',
   LINES: 'LINES',
@@ -27,24 +28,32 @@ export default class Board extends Component {
     // };
 
     this.initialState = {
+      width: 7,
+      height: 7,
       showSolution: false,
       mode: modes.TOGGLES,
       toggles: {
-        [this.toggleKey(0, 1)]: false,
-        [this.toggleKey(0, 3)]: false,
-        [this.toggleKey(0, 5)]: false,
-        [this.toggleKey(2, 1)]: false,
-        [this.toggleKey(2, 3)]: false,
-        [this.toggleKey(2, 5)]: false
+        [this.toggleKey(1, 2)]: false,
+        [this.toggleKey(1, 4)]: false,
+        [this.toggleKey(3, 1)]: false,
+        [this.toggleKey(3, 3)]: false,
+        [this.toggleKey(3, 5)]: false,
+        [this.toggleKey(5, 1)]: false,
+        [this.toggleKey(5, 3)]: false,
+        [this.toggleKey(5, 5)]: false
       },
       lines: {
-        [this.lineKey(0, 1, 0, 3)]: true,
-        [this.lineKey(0, 3, 0, 5)]: true,
-        [this.lineKey(2, 1, 2, 3)]: true,
-        [this.lineKey(2, 3, 2, 5)]: true,
-        [this.lineKey(0, 1, 2, 1)]: true,
-        [this.lineKey(0, 3, 2, 3)]: true,
-        [this.lineKey(0, 5, 2, 5)]: true
+        [this.lineKey(1, 2, 1, 4)]: true,
+        [this.lineKey(1, 2, 3, 1)]: true,
+        [this.lineKey(1, 2, 3, 3)]: true,
+        [this.lineKey(1, 4, 3, 5)]: true,
+        [this.lineKey(3, 1, 3, 3)]: true,
+        [this.lineKey(3, 3, 3, 5)]: true,
+        [this.lineKey(5, 1, 5, 3)]: true,
+        [this.lineKey(5, 3, 5, 5)]: true,
+        [this.lineKey(3, 1, 5, 1)]: true,
+        [this.lineKey(3, 3, 5, 3)]: true,
+        [this.lineKey(3, 5, 5, 5)]: true
       },
       lineStart: null
     };
@@ -251,14 +260,14 @@ export default class Board extends Component {
   };
 
   renderGrid() {
-    const { height, width, cellSize } = this.props;
+    const { height, width } = this.state;
 
     return range(height).map(row =>
       range(width).map(column =>
         <GridCell
           row={row}
           column={column}
-          cellSize={cellSize}
+          cellSize={CELL_SIZE}
         />
       )
     );
@@ -331,7 +340,6 @@ export default class Board extends Component {
 
   renderLines() {
     const { lines } = this.state;
-    const { cellSize } = this.props;
 
     return Object.keys(lines).map(lineKey => {
       const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
@@ -342,7 +350,7 @@ export default class Board extends Component {
           startColumn={startColumn}
           endRow={endRow}
           endColumn={endColumn}
-          cellSize={cellSize}
+          cellSize={CELL_SIZE}
           key={lineKey}
         />
       );
@@ -350,7 +358,6 @@ export default class Board extends Component {
   }
 
   renderToggles(solution) {
-    const { cellSize } = this.props;
     const { showSolution, toggles, lineStart } = this.state;
     const solutionExists = showSolution && solution !== null;
 
@@ -361,7 +368,7 @@ export default class Board extends Component {
         <Toggle
           row={row}
           column={column}
-          cellSize={cellSize}
+          cellSize={CELL_SIZE}
           isFull={toggles[toggleKey]}
           isHighlighted={lineStart !== null && row === lineStart.row && column === lineStart.column}
           isInSolution={solutionExists && solution.indexOf(toggleKey) > -1}
@@ -372,14 +379,14 @@ export default class Board extends Component {
   }
 
   renderClickAreas() {
-    const { height, width, cellSize } = this.props;
+    const { height, width } = this.state;
 
     return range(height).map(row =>
       range(width).map(column =>
         <ClickArea
           row={row}
           column={column}
-          cellSize={cellSize}
+          cellSize={CELL_SIZE}
           onClick={this.onCellClick}
         />
       )
@@ -387,11 +394,10 @@ export default class Board extends Component {
   }
 
   render() {
-    const { width, height, cellSize } = this.props;
-    const { showSolution, mode, toggles, lines } = this.state;
+    const { width, height, showSolution, mode, toggles, lines } = this.state;
     const solution = mode === modes.PLAY ? findSolution(toggles, lines) : null;
-    const boardWidth = width * cellSize;
-    const boardHeight = height * cellSize;
+    const boardWidth = width * CELL_SIZE;
+    const boardHeight = height * CELL_SIZE;
 
     return (
       <div>
