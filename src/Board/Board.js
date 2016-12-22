@@ -273,9 +273,40 @@ export default class Board extends Component {
     );
   }
 
+  addLastColumn = () => {
+    const { width } = this.state;
+
+    this.setState({
+      width: width + 1
+    });
+  };
+
+  removeLastColumn = () => {
+    const { width } = this.state;
+
+    this.setState({
+      width: width - 1
+    });
+  };
+
+  removeLastRow = () => {
+    const { height } = this.state;
+
+    this.setState({
+      height: height - 1
+    });
+  };
+
+  addLastRow = () => {
+    const { height } = this.state;
+
+    this.setState({
+      height: height + 1
+    });
+  };
+
   renderArrows() {
-    const { width, height } = this.props;
-    const { toggles } = this.state;
+    const { width, height, toggles } = this.state;
     let canRemoveFirstRow = true, canRemoveLastRow = true;
     let canRemoveFirstColumn = true, canRemoveLastColumn = true;
 
@@ -297,42 +328,78 @@ export default class Board extends Component {
 
     return [
       canRemoveFirstColumn ?
-        <button className="Board-arrow-button" style={{ left: -25, top: 0 }} key="remove-first-column">
+        <button
+          className="Board-arrow-button"
+          style={{ left: -25, top: 0 }}
+          key="remove-first-column"
+        >
           →
         </button>
         : null
       ,
       canRemoveFirstRow ?
-        <button className="Board-arrow-button" style={{ left: 0, top: -20 }} key="remove-first-row">
+        <button
+          className="Board-arrow-button"
+          style={{ left: 0, top: -20 }}
+          key="remove-first-row"
+        >
           ↓
         </button>
         : null
       ,
-      <button className="Board-arrow-button" style={{ right: 0, top: -20 }} key="add-first-row">
+      <button
+        className="Board-arrow-button"
+        style={{ right: 0, top: -20 }}
+        key="add-first-row"
+      >
         ↑
       </button>
       ,
-      <button className="Board-arrow-button" style={{ right: -25, top: 0 }} key="add-last-column">
+      <button
+        className="Board-arrow-button"
+        style={{ right: -25, top: 0 }}
+        onClick={this.addLastColumn}
+        key="add-last-column"
+      >
         →
       </button>
       ,
       canRemoveLastColumn ?
-        <button className="Board-arrow-button" style={{ right: -25, bottom: 0 }} key="remove-last-column">
+        <button
+          className="Board-arrow-button"
+          style={{ right: -25, bottom: 0 }}
+          onClick={this.removeLastColumn}
+          key="remove-last-column"
+        >
           ←
         </button>
         : null
       ,
       canRemoveLastRow ?
-        <button className="Board-arrow-button" style={{ right: 0, bottom: -20 }} key="remove-last-row">
+        <button
+          className="Board-arrow-button"
+          style={{ right: 0, bottom: -20 }}
+          onClick={this.removeLastRow}
+          key="remove-last-row"
+        >
           ↑
         </button>
         : null
       ,
-      <button className="Board-arrow-button" style={{ left: 0, bottom: -20 }} key="add-last-row">
+      <button
+        className="Board-arrow-button"
+        style={{ left: 0, bottom: -20 }}
+        onClick={this.addLastRow}
+        key="add-last-row"
+      >
         ↓
       </button>
       ,
-      <button className="Board-arrow-button" style={{ left: -25, bottom: 0 }} key="add-first-column">
+      <button
+        className="Board-arrow-button"
+        style={{ left: -25, bottom: 0 }}
+        key="add-first-column"
+      >
         ←
       </button>
     ];
