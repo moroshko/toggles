@@ -29,9 +29,9 @@ export default class Board extends Component {
 
     this.initialState = {
       width: 7,
-      height: 7,
+      height: 9,
       showSolution: false,
-      mode: modes.TOGGLES,
+      mode: modes.PLAY,
       toggles: {
         [this.toggleKey(1, 2)]: false,
         [this.toggleKey(1, 4)]: false,
@@ -489,11 +489,48 @@ export default class Board extends Component {
     ];
   }
 
+  doesLineIntersectToggles = ({ startRow, startColumn, endRow, endColumn }) => {
+    const { toggles } = this.state;
+
+    const rowsDiff = endRow - startRow;
+    const columnsDiff = endColumn - startColumn;
+
+    if (rowsDiff === 0) {
+      for (let dc = 1; dc < columnsDiff; dc++) {
+        const potentialIntersectionKey =
+          this.toggleKey(startRow, startColumn + dc);
+
+        if (typeof toggles[potentialIntersectionKey] !== 'undefined') {
+          return true;
+        }
+      }
+    } else {
+      for (let dr = 1; dr < rowsDiff; dr++) {
+        const dc = dr * columnsDiff / rowsDiff;
+
+        if (dc % 1 !== 0) { // if dc is not integer, continue
+          continue;
+        }
+
+        const potentialIntersectionKey =
+          this.toggleKey(startRow + dr, startColumn + dc);
+
+        if (typeof toggles[potentialIntersectionKey] !== 'undefined') {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   renderLines() {
     const { lines } = this.state;
 
     return Object.keys(lines).map(lineKey => {
       const { startRow, startColumn, endRow, endColumn } = this.parseLineKey(lineKey);
+      const isStraight =
+        !this.doesLineIntersectToggles({ startRow, startColumn, endRow, endColumn });
 
       return (
         <Line
@@ -502,6 +539,7 @@ export default class Board extends Component {
           endRow={endRow}
           endColumn={endColumn}
           cellSize={CELL_SIZE}
+          isStraight={isStraight}
           key={lineKey}
         />
       );
